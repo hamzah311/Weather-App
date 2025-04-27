@@ -8,10 +8,12 @@ import rain_icon from '../assets/rain.png'
 import snow_icon from '../assets/snow.png'
 import wind_icon from '../assets/wind.png'
 import humidity_icon from '../assets/humidity.png'
-const Weather = () => {
+import aqi_icon from '../assets/aqi.png'
 
+const Weather = () => {
     const inputRef = useRef();
     const [weatherData, setWeatherData] = useState(false);
+    const [aqiData, setAqiData] = useState(null);
 
     const allIcons = {
         "01d": clear_icon,
@@ -30,14 +32,45 @@ const Weather = () => {
         "13n": snow_icon
     }
 
-    const search = async (city) =>{
+    const getAQILevel = (aqi) => {
+        const levels = {
+            1: { label: 'Good', color: '#00e400' },
+            2: { label: 'Fair', color: '#ffff00' },
+            3: { label: 'Moderate', color: '#ff7e00' },
+            4: { label: 'Poor', color: '#ff0000' },
+            5: { label: 'Very Poor', color: '#8f3f97' }
+        };
+        return levels[aqi] || { label: 'Unknown', color: '#808080' };
+    };
+
+    const fetchAQI = async (lat, lon) => {
+        try {
+            const url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${import.meta.env.VITE_APP_ID}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            if (response.ok && data.list && data.list.length > 0) {
+                const aqi = data.list[0].main.aqi;
+                const aqiInfo = getAQILevel(aqi);
+                setAqiData({
+                    value: aqi,
+                    label: aqiInfo.label,
+                    color: aqiInfo.color
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching AQI data:", error);
+            setAqiData(null);
+        }
+    };
+
+    const search = async (city) => {
         if (city === "") {
             alert("Enter City Name!");
             return;
         }
         try {
             const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${import.meta.env.VITE_APP_ID}`;
-
             const response = await fetch(url);
             const data = await response.json();
 
@@ -46,61 +79,99 @@ const Weather = () => {
                 return;
             }
 
-            console.log(data);
             const icon = allIcons[data.weather[0].icon] || clear_icon;
+            
             setWeatherData({
                 humidity: data.main.humidity,
                 windSpeed: data.wind.speed,
                 temperature: Math.floor(data.main.temp),
                 location: data.name,
                 icon: icon
-            })
+            });
+
+            if (data.coord) {
+                fetchAQI(data.coord.lat, data.coord.lon);
+            }
 
         } catch (error) {
             setWeatherData(false);
+            setAqiData(null);
             console.error("Error in fetching data.")
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         search("New Delhi");
-    },[])
+    }, []);
 
-  return (
-    <div className='weather'>
-        
-      <div className="search-bar">
-        <input ref={inputRef} type="text" placeholder='Search' onKeyDown={(e) => {
-      if (e.key === 'Enter') {
-        search(inputRef.current.value);
-      }
-    }} />
-        <img src={search_icon} alt="" onClick={()=>search(inputRef.current.value)}/>
-      </div>
-      {weatherData?<>
-        <img src={weatherData.icon} alt="" className='weather-icon' />
-      <p className='temperature'>{weatherData.temperature}°C</p>
-      <p className='location'>{weatherData.location}</p>
-      <div className="weather-data">
-        <div className="col">
-            <img src={humidity_icon} alt="" />
-            <div>
-                <p>{weatherData.humidity}%</p>
-                <span>Humidity</span>
+    return (
+        <div className='weather'>
+            
+            <div className="search-bar">
+                <input 
+                    ref={inputRef} 
+                    type="text" 
+                    placeholder='Search' 
+                    onKeyDown={(e) => e.key === 'Enter' && search(inputRef.current.value)}
+                />
+                <img src={search_icon} alt="" onClick={() => search(inputRef.current.value)} />
             </div>
+
+            {weatherData ? (
+                <>
+                    <img src={weatherData.icon} alt="" className='weather-icon' />
+                    <p className='temperature'>{weatherData.temperature}°C</p>
+                    <p className='location'>{weatherData.location}</p>
+
+                    <div className="weather-data">
+
+                        {/* Humidity */}
+                        <div className="col">
+                            <img src={humidity_icon} alt="Humidity" />
+                            <div>
+                                <span>Humidity</span>
+                                <p>{weatherData.humidity}%</p>
+                            </div>
+                        </div>
+
+                        {/* Wind */}
+                        <div className="col">
+                            <img src={wind_icon} alt="Wind" />
+                            <div>
+                                <span>Wind Speed</span>
+                                <p>{weatherData.windSpeed} Km/h</p>
+                            </div>
+                        </div>
+
+                        {/* AQI */}
+                        <div className="col">
+                            <img src={aqi_icon} alt="AQI" className="aqi-icon" />
+                            <div>
+                                {aqiData ? (
+                                    <>
+                                        <span>Air Quality</span>
+                                        <p 
+                                            className="aqi-value"
+                                            style={{ borderColor: aqiData.color }}
+                                        >
+                                            {aqiData.label}
+                                        </p>
+                                    </>
+                                ) : (
+                                  <>
+                                  <span>Air Quality</span>
+                                        <p className="aqi-value">--</p>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
+                    </div>
+                </>
+            ) : null}
+
         </div>
-        <div className="col">
-            <img src={wind_icon} alt="" />
-            <div>
-                <p>{weatherData.windSpeed} Km/h</p>
-                <span>Wind Speed</span>
-            </div>
-        </div>
-      </div>
-      </>:<></>}
-      
-    </div>
-  )
+    )
 }
 
 export default Weather
