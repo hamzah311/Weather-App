@@ -1,4 +1,4 @@
-.weather {
+/* .weather {
     place-self: center;
     margin-top: 40px;
     margin-bottom: 70px;
@@ -97,13 +97,13 @@
     font-family: "Poppins", sans-serif;
 }
 
-/* match humidity + wind icons */
+/* match humidity + wind icons 
 .aqi-icon {
     height: 50px;
     width: 50px;
 }
 
-/* unify value look */
+/* unify value look *
 .aqi-value {
     font-family: "Poppins", sans-serif;
     font-size: 18px;
@@ -116,12 +116,12 @@
     text-transform: uppercase;
 }
 
-/* optional: outline using the AQI color (looks better than full fill) */
+/* optional: outline using the AQI color (looks better than full fill) *
 .aqi-value {
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Tablet Responsive Design */
+/* Tablet Responsive Design *
 @media (max-width: 768px) {
     .weather {
         padding: 35px;
@@ -168,7 +168,7 @@
     }
 }
 
-/* Mobile Responsive Design */
+/* Mobile Responsive Design *
 @media (max-width: 480px) {
     .weather {
         padding: 30px;
@@ -217,7 +217,7 @@
     }
 }
 
-/* Extra Small Mobile Devices */
+/* Extra Small Mobile Devices *
 @media (max-width: 360px) {
     .weather {
         padding: 25px;
@@ -251,4 +251,289 @@
     .weather-data .col span {
         font-size: 13px;
     }
+} */
+/* Weather.css - responsive update */
+
+/* reset box sizing to avoid overflow surprises */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.weather {
+  /* center and be responsive */
+  margin: 40px auto 70px;
+  padding: 32px;
+  border-radius: 20px;
+  background-image: url("/assets/w.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* make width responsive so it never overflows the viewport */
+  width: min(450px, 94vw);
+  /* keep the card visually deep */
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.47);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* search bar layout */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.search-bar input {
+  flex: 1;
+  height: 48px;
+  border: none;
+  outline: none;
+  border-radius: 999px;
+  padding: 0 20px;
+  color: #2b2b2b;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 16px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.search-bar img {
+  width: 46px;
+  height: 46px;
+  padding: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+/* main weather artwork */
+.weather-icon {
+  width: clamp(96px, 24vw, 150px);
+  margin: 24px 0;
+}
+
+/* fluid typography using clamp so it scales naturally */
+.temperature {
+  color: #fff;
+  font-size: clamp(48px, 9vw, 80px);
+  /* scales from 48 to 80 */
+  line-height: 1;
+  font-weight: 600;
+  margin: 4px 0;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.location {
+  color: #fff;
+  font-size: clamp(20px, 4vw, 40px);
+  margin-bottom: 14px;
+}
+
+/* weather data area: use grid to adapt on small screens */
+.weather-data {
+  width: 100%;
+  margin-top: 20px;
+  color: #fff;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+/* each column */
+.weather-data .col {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: clamp(15px, 3.2vw, 22px);
+  min-width: 0;
+  /* important to prevent overflow when using grid */
+}
+
+/* small descriptor under main value */
+.weather-data .col span {
+  display: block;
+  font-size: clamp(12px, 2.3vw, 16px);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* icons for humidity/wind/aqi - keep same size */
+.weather-data .col img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  margin-top: 2px;
+}
+
+/* keep your existing aqi style, but subtle and matching */
+.aqi-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  min-width: 84px;
+  font-family: "Poppins", sans-serif;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* aqi icon (match other icons) */
+.aqi-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+/* AQI value tag unified with other values */
+.aqi-value {
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: inline-block;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ensure small touch targets */
+.weather-data .col a,
+.weather-data .col button {
+  min-height: 36px;
+  min-width: 36px;
+}
+
+/* Tablet / small laptops */
+@media (max-width: 768px) {
+  .weather {
+    padding: 28px;
+    margin-top: 30px;
+    margin-bottom: 50px;
+  }
+
+  .search-bar input {
+    height: 46px;
+    font-size: 15px;
+  }
+
+  .temperature {
+    font-size: clamp(44px, 9.5vw, 75px);
+  }
+
+  .location {
+    font-size: clamp(18px, 4.5vw, 38px);
+  }
+
+  .weather-data {
+    gap: 12px;
+  }
+
+  .weather-data .col img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .aqi-icon {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+  .weather {
+    padding: 22px;
+    margin: 18px auto 40px;
+    width: min(450px, 96vw);
+    border-radius: 18px;
+  }
+
+  /* switch grid to 2 columns (value + label) for better wrapping */
+  .weather-data {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .weather-icon {
+    width: clamp(84px, 24vw, 130px);
+    margin: 18px 0;
+  }
+
+  .temperature {
+    font-size: clamp(40px, 12vw, 70px);
+  }
+
+  .location {
+    font-size: clamp(16px, 5.5vw, 34px);
+  }
+
+  .weather-data .col {
+    font-size: 16px;
+  }
+
+  .weather-data .col span {
+    font-size: 13px;
+  }
+
+  .weather-data .col img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .aqi-icon {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+  .weather {
+    padding: 18px;
+    width: calc(100vw - 28px);
+    margin: 12px auto 34px;
+    border-radius: 14px;
+  }
+
+  .temperature {
+    font-size: clamp(34px, 16vw, 65px);
+  }
+
+  .location {
+    font-size: 28px;
+  }
+
+  .weather-data {
+    grid-template-columns: 1fr;
+    /* stack on top of each other */
+    gap: 10px;
+  }
+
+  .weather-data .col {
+    gap: 10px;
+    font-size: 15px;
+  }
+
+  .weather-data .col img {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* avoid page horizontal overflow */
+html,
+body {
+  overflow-x: hidden;
 }
