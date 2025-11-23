@@ -287,7 +287,7 @@ const Weather = () => {
 
   return (
     <div className='weather'>
-      <div className="search-bar" role="search">
+      {/* <div className="search-bar" role="search">
         <input
           ref={inputRef}
           type="text"
@@ -298,7 +298,21 @@ const Weather = () => {
           }}
         />
         <img src={search_icon} alt="Search" onClick={()=>search(inputRef.current.value)}/>
-      </div>
+      </div> */}
+      <div className="search-bar">
+  <div className="search-input-wrap">
+    <input
+      ref={inputRef}
+      type="text"
+      placeholder="Search"
+      onKeyDown={(e) => e.key === "Enter" && search(inputRef.current.value)}
+    />
+
+    <button onClick={() => search(inputRef.current.value)}>
+      <img src={search_icon} alt="Search"/>
+    </button>
+  </div>
+</div>
 
       {weatherData ? (
         <>
